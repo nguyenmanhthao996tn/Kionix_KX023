@@ -27,31 +27,30 @@ int KX023::begin(void)
 	}
 	else
 	{
-		_wire->beginTransmission(_slaveAddress);
-		if (_wire->endTransmission() == 0)
-		{
-			return 0;
-		}
-
 		_wire->begin();
+		_wire->beginTransmission(_slaveAddress);
+		if (_wire->endTransmission() != 0)
+		{
+			return -1;
+		}
 	}
 
 	// Check WHO_AM_I register
 	if (readRegister(KX023_Who_AM_I_REG) != 0x15)
 	{
 		end();
-		return 0;
+		return -2;
 	}
 
 	// Check COTR register
-	// uint8_t cotr_reg_val = (uint8_t)readRegister(KX023_COTR_REG);
-	// if (!((cotr_reg_val == 0x55) || (cotr_reg_val == 0xAA)))
-	// {
-	// 	end();
-	// 	return 0;
-	// }
+	uint8_t cotr_reg_val = (uint8_t)readRegister(KX023_COTR_REG);
+	if (!((cotr_reg_val == 0x55) || (cotr_reg_val == 0xAA)))
+	{
+		end();
+		return -3;
+	}
 
-	return 1;
+	return 0;
 }
 
 void KX023::end(void)
@@ -219,7 +218,7 @@ int KX023::readRegister(uint8_t address)
 {
 	uint8_t value;
 
-	if (readRegisters(address, &value, sizeof(value)) != 1)
+	if (readRegisters(address, &value, 1) != 1)
 	{
 		return -1;
 	}

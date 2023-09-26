@@ -35,7 +35,7 @@ void setup(void)
     ;
   Serial.println("****** KX023-1025 Read Example for Gemini ******");
 
-  if (myIMU.begin())
+  if (myIMU.begin() != 0)
   {
     Serial.println("Could not find KX023-1025? Check wiring");
   }
